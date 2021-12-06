@@ -1,6 +1,6 @@
-﻿xpCombine = {};
+xpCombine = {};
 
-xpCombine.debug = false --true --
+xpCombine.debug = true --true --
 
 xpCombine.myCurrentModDirectory = g_currentModDirectory;
 xpCombine.modName = g_currentModName
@@ -119,13 +119,13 @@ function xpCombine:onLoad(savegame)
     if basePerf <= 0 then
     -- Then motorConfiguration hp
         local vehicleName = self:getFullName()
-        local coef = 1.5
+        local coef = 1
         local keyCategory = "vehicle.storeData.category"
         local category = self.xmlFile:getValue(keyCategory)
         if category == "forageHarvesters" or category == "forageHarvesterCutters" then
             coef = 6.
         elseif category == "beetVehicles" then
-            coef = 0.6
+            coef = 0.3
 		elseif category == "potatoVehicles" then
             coef = 0.3
         end
@@ -381,13 +381,13 @@ function xpCombine:onUpdateTick(dt, isActiveForInput, isActiveForInputIgnoreSele
                     spec.speedLimit = spec.mrGenuineSpeedLimit;
                 else
 
-                    local maxAvgArea = spec.mrCombineLimiter.powerBoost * spec.mrCombineLimiter.basePerfAvgArea;
+                    local maxAvgArea = spec.mrCombineLimiter.powerBoost * spec.mrCombineLimiter.basePerfAvgArea / spec.mrCombineLimiter.loadMultiplier;
                     local predictLimitSet = false
                     --take into account the areaAcc
                     if areaAcc>0 then
                         --predict in 3s
                         local predictAvgArea = avgArea + areaAcc*3000
-                        if xpCombine.debug then print("predictAvgArea="..tostring(predictAvgArea) .. " - new speedLimit="..tostring(spec.speedLimit)) end
+                        if xpCombine.debug then print("predictAvgArea="..tostring(predictAvgArea) .. " - new speedLimit="..tostring(spec.speedLimit) .. " - loadMultiplier:="..tostring(spec.mrCombineLimiter.loadMultiplier)) end
                         if predictAvgArea>1.5*maxAvgArea then
                             spec.speedLimit = math.max(2, math.min(0.95*spec.speedLimit, 0.9*avgSpeed*3.6))
                             predictLimitSet = true
@@ -468,6 +468,8 @@ function xpCombine:getSpeedLimit(superfunc, onlyIfWorking)
                         spec_xpCombine.highMoisture = limit < 4
                         -- print("speedLimit from Time       : "..tostring(limit))
                         -- print("loadLimit / limit          : "..tostring(loadLimit / limit))
+					else
+						spec_xpCombine.mrCombineLimiter.loadMultiplier = 1
                     end
                 end
             end
@@ -487,6 +489,7 @@ function xpCombine:getMoistureDependantSpeed(fruitType, defaultSpeedLimit)
         fruitType == FruitType.CANOLA or
         fruitType == FruitType.SOYBEAN or
         fruitType == FruitType.SUNFLOWER or
+		fruitType == FruitType.SORGHUM or
         fruitType == FruitType.MAIZE then
         local time = g_seasons.weather.cropMoistureContent
         speed = g_combinexp.moistureDependantSpeed.default:get(time)
@@ -507,7 +510,8 @@ function xpCombine:getTimeDependantSpeed(fruitType, defaultSpeedLimit)
         fruitType == FruitType.OAT or
         fruitType == FruitType.CANOLA or
         fruitType == FruitType.SOYBEAN or
-        fruitType == FruitType.SUNFLOWER then
+        fruitType == FruitType.SUNFLOWER or
+		fruitType == FruitType.SORGHUM then
         speed = g_combinexp.timeDependantSpeed.cereal:get(time)
     elseif fruitType == FruitType.MAIZE then
         speed = g_combinexp.timeDependantSpeed.maize:get(time)
