@@ -68,7 +68,7 @@ Eigenschaften:
             <en>Crop moisture is high at this time of the day and reduce combining speed</en>
             <de>Die Luftfeuchtigkeit der Ernteist zu dieser Tageszeit hoch und verringert die Erntegeschwindigkeitslimit</de>
             <ru>В это время суток влажность урожая высока, что снижает скорость комбайна.</ru>
-            <pl>Wilgotność upraw jest o tej porze dnia wysoka i zmniejsza prędkość łączenia</pl>
+            <pl>Wilgotność upraw jest o tej porze dnia wysoka i zmniejsza prędkość koszenia</pl>
         </text>
         <text name="input_CombineXP_SETTINGS">
             <en>Open Combine XPerience Settings</en>
